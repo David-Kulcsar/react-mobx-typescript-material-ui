@@ -1,0 +1,75 @@
+body {
+    background: antiquewhite;
+}
+
+.generic-todo {
+    text-align: -webkit-center;
+}
+
+.add-edit-form{
+    border: 2px solid;
+    width: 50%;
+    padding-bottom: 30px;
+    border-radius: 10px;
+}
+
+ul {
+    list-style: none;
+    max-width: 50%;
+    border: 2px solid blue;
+    border-radius: 10px;
+    padding: 0;
+}
+
+[name="title"] {
+    font-size: 25px;
+}
+
+[name="dueDate"] {
+    font-size: 21.5px;
+}
+
+.button-container > * {
+    font-size: 30px;
+    margin: 20px;
+    border-radius: 10px;
+}
+
+.button-container [value='Save'] {
+    background: deepskyblue;
+}
+
+.sort-container {
+    margin-top: 15px;
+}
+
+ul li {
+    border: 1px solid;
+    border-left: none;
+    border-right: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+li span {
+    border-right: 1px solid;
+    padding: 20px;
+}
+
+li .dueDate {
+    flex: 1;
+}
+
+li .title {
+    width: 190px;
+}
+
+li.expired .title {
+    text-decoration-line: line-through;
+}
+
+.delete-btn {
+    background: deepskyblue;
+    border-radius: 7px;
+    font-size: 16px
+}
