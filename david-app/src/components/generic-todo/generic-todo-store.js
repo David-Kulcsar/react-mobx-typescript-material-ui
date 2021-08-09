@@ -1,7 +1,7 @@
 function guid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0; 
-      let v = c === 'x' ? r : (r & 0x3 | 0x8);
+      const r = Math.random() * 16 | 0;
+      let v = c === 'x' ? r : ((r & 0x3) | 0x8);
       return v.toString(16);
     });
 }
@@ -25,8 +25,7 @@ export class GenericTodoStore {
         if (sortByFirstComponent) {
             this.setSort(sortByFirstComponent.id);
         }
-        this.getList();
-        
+        this.getList(); 
     }
 
     getList = async () => {
@@ -35,7 +34,7 @@ export class GenericTodoStore {
         const items = await request.json();
         const mappedItems = items.map(x => new Model(x));
         this.setItems(mappedItems);
-        return mappedItems;
+        //return mappedItems;
     }
 
     delete = async (deletedItem) => {

@@ -2,15 +2,9 @@ import { GenericTodoComponent } from "./generic-todo-component.js";
 import { GenericTodoStore } from "./generic-todo-store.js";
 import { Task } from "../../models/Task.js";
 
-if (document.readyState === 'complete') {
-    this.init();
-} else {
-    window.addEventListener('load', init);
-}
-
-function init() {
+const Init = () => {
     // remove event listener, we not need anymore
-    window.removeEventListener('load', init);
+    //window.removeEventListener('load', init);
 
     // we create a table config
     const listConfig = {
@@ -44,14 +38,14 @@ function init() {
         ]
     };
 
-    const parentElement = document.querySelector('#root');
-
     const todoStore = new GenericTodoStore(listConfig);
 
-    const todoComonent = new GenericTodoComponent(todoStore);
+    //const todoComonent = new GenericTodoComponent(todoStore);
 
-    todoComonent.mount(parentElement);
-
+    //todoComonent.mount(parentElement);
+    return (
+        <GenericTodoComponent store = {todoStore}></GenericTodoComponent>
+    )
 }
 
-export default init;
+export default Init;

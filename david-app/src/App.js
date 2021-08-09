@@ -1,11 +1,11 @@
 // import logo from './logo.svg';
 import './components/generic-todo/generic-list.css';
-// import init from './components/generic-todo/todo-list.js';
-import init from './components/generic-todo/todo-list';
+import Init from './components/generic-todo/todo-list.js';
 
 function App() {
   return (
     <div className="App">
+      <Init />
     </div>
   );
 }

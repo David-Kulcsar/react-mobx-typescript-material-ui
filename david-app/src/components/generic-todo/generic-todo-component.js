@@ -1,24 +1,25 @@
-import { BaseComponent } from '../../core/baseComponent.js';
+import { Component } from 'react';
 
-export class GenericTodoComponent extends BaseComponent {
-    listConfig = null;
+export class GenericTodoComponent extends Component {
     store = null;
+    listConfig = null;
+    
 
-    constructor(store) {
-        super();
-        this.store = store;
-        this.store.refreshCb = this.refresh;
-        this.listConfig = store.listConfig;
+    componentDidMount() {
+        this.store = this.props.store;
+        this.listConfig = this.store.listConfig;
+        this.store.refreshCb = () => this.forceUpdate();
+        this.forceUpdate();
+
     }
 
     renderList = () => {
-        const rows = this.store.getItems().map(item => this.renderLi(item));
-        const list = { tagName: 'ul', attributes: this.listConfig.attributes, children: rows };
-        return { tagName: 'div', attributes: { className: 'list-container' }, children: [list] };
+        const rows = this.store.getItems().map( (item, index) => this.renderLi(item, index));
+        const list = (<ul {...this.listConfig.attributes}> {[rows]} </ul>);
+        return (<div className = 'list-container'> {[list]} </div>);
     }
 
-    renderLi = (item) => {
-
+    renderLi = (item, index) => {
         const liAttributes = {};
         const spans = this.listConfig.components.map(component => {
             if(component.id === 'dueDate' && new Date(component.getCellValue(item)) < new Date()) {
@@ -29,38 +30,43 @@ export class GenericTodoComponent extends BaseComponent {
             return span;
         });
 
-        const deleteAction = { tagName: 'button', attributes: { className: 'delete-btn', onclick: () => this.store.delete(item) }, children: ['delete'] };
+        const deleteAction = (
+            <button 
+                className = 'delete-btn'
+                onClick = {() => this.store.delete(item)}
+            > delete
+            </button>);
 
         const actions = [deleteAction];
         const action = this.renderSpan({}, actions);
-        return { tagName: 'li', attributes: liAttributes, children: [...spans, action] };
+        return (<li {...liAttributes} key={index}> {[...spans, action]} </li>);
     }
 
     renderSpan = (attributes, children) => {
-        return { tagName: 'span', attributes, children };
+        return (<span {...attributes}> {[children]} </span>);
     }
 
     renderSortBy = () => {
         const options = this.listConfig.components.map(component => {
-            const optionAttributes = {value: component.id};
+            // eslint-disable-next-line no-unused-vars
             const [currentid, ...rest] = this.store.currentSort;
-            if(currentid === component.id)
-                optionAttributes.selected = true;
-            return { tagName: 'option', attributes: optionAttributes, children: [component.id]}
+            return (
+                <option 
+                    value={component.id}  
+                    key={component.id}
+                    id={component.id}
+                > 
+                    {component.id} 
+                </option>);
         }); 
 
         const attributes = { className: 'sortable' };
-        attributes.onchange = (evt) => {
+        attributes.onChange = (evt) => {
             this.store.setSort(evt.target.value);
         }
-        const select = { tagName: 'select', attributes: attributes, children: options};
-        const label = { tagName: 'label', children: ["sort by:"]};
-
-        return { 
-            tagName: 'div', 
-            attributes: { className: 'sort-container' }, 
-            children: [label, select]
-        };
+        const select = (<select {...attributes}> {[options]} </select>);
+        const label = (<label>sort by:</label>);
+        return (<div className='sort-container'> {[label, select]} </div>);
     }
 
     renderForm = () => {
@@ -68,7 +74,7 @@ export class GenericTodoComponent extends BaseComponent {
         const { formFields } = this.listConfig;
 
         const children = [
-            { tagName: 'h2', children: ['Add Form'] }
+            (<h2>Add Form</h2>)
         ];
 
         formFields.forEach(fieldAttributes => {
@@ -77,47 +83,38 @@ export class GenericTodoComponent extends BaseComponent {
                 value = value.substr(0, 16);
             }
             const inputCombo = [
-                { tagName: 'input', attributes: {...fieldAttributes, value: value } }
-            ]
+                ( <input {...fieldAttributes} {...value} /> )
+            ];
 
             if (fieldAttributes.type === 'checkbox') {
-                inputCombo.push({ tagName: 'label', children: [fieldAttributes.name] });
+                inputCombo.push(<label>{fieldAttributes.name}</label>);
             } 
-            children.push({tagName: 'div', attributes: {className: 'input-container'}, children: inputCombo});
+            children.push((<div className = 'input-container'>{inputCombo}</div>));
         });
 
         const buttons = [
-            { 
-                tagName: 'button', 
-                attributes: { className: 'button', onclick: () => this.store.setCurrentItem(null) }, 
-                children: ['Cancel'] 
-            },
-            { 
-                tagName: 'input',  
-                attributes: { value: 'Save', type: 'submit' } 
-            }
+            (<button 
+                className = 'button'
+                onClick = {() => this.store.setCurrentItem(null)}
+            >Cancel</button>),
+            (<input value = 'Save' type = 'submit' />)
         ]
 
-        children.push(
-            {tagName: 'div', attributes: {className: 'button-container'}, children: buttons}
-        );
+        children.push((<div className = 'button-container'>{buttons}</div>));
 
-        const form = { 
-            tagName: 'form', 
-            attributes: { onsubmit: this.store.onSubmit }, 
-            children
-        };
+        const form = (<form onSubmit = {this.store.onSubmit}>{children}</form>);
 
-        return { tagName: 'div', attributes: { className: 'add-edit-form' }, children: [form] }; 
+        return (<div className = 'add-edit-form'>{form}</div>);
     }
 
     render() {
-        const children = [
-            this.renderForm(),
-            this.renderSortBy(),
-            // this.renderAddButton(),
-            this.renderList()
-        ];
-        return this.renderElement({ tagName: 'div', attributes: { className: 'generic-todo' }, children });
+        if (!this.store) { return null; }
+        return (
+            <div className = 'generic-todo'>
+                {this.renderForm()}
+                {this.renderSortBy()}
+                {this.renderList()}
+            </div>
+        )
     }
 }
